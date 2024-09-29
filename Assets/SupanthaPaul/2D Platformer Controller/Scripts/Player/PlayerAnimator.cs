@@ -23,6 +23,8 @@ namespace SupanthaPaul
 
 		private void Update()
 		{
+
+			UpdateAnimationRPC();
 			//// Idle & Running animation
 			//m_anim.SetFloat(Move, Mathf.Abs(m_rb.velocity.x));
 
@@ -52,10 +54,15 @@ namespace SupanthaPaul
 			m_anim.SetBool(IsDashing, m_controller.isDashing);
         }
 
-		
+		[Rpc(SendTo.Everyone)]
 		private void UpdateAnimationRPC()
         {
-		
-		}
+            // Idle & Running animation
+            m_anim.SetFloat(Move, Mathf.Abs(m_rb.velocity.x));
+
+            // Jump state (handles transitions to falling/jumping)
+            float verticalVelocity = m_rb.velocity.y;
+            m_anim.SetFloat(JumpState, verticalVelocity);
+        }
 	}
 }

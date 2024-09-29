@@ -18,6 +18,8 @@ namespace SupanthaPaul
 
 		private void FixedUpdate()
 		{
+			if (target == null) return;
+
 			Vector3 desiredPosition = target.localPosition + offset;
 			var localPosition = transform.localPosition;
 			Vector3 smoothedPosition = Vector3.Lerp(localPosition, desiredPosition, smoothSpeed);
