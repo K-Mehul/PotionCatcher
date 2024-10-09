@@ -66,18 +66,18 @@ namespace SupanthaPaul
 
         void Start()
 		{
-			if(!IsOwner) return;
+			if(!IsLocalPlayer) return;
 
 			CameraFollow = FindObjectOfType<CameraFollow>();
 
-			if(CameraFollow != null)
-            {
+			if (CameraFollow != null)
+			{
 				CameraFollow.SetTarget(this.transform);
-            }
-            else
-            {
+			}
+			else
+			{
 				Debug.Log("Camera Follow is null");
-            }
+			}
 
 			// create pools for particles
 			//PoolManager.instance.CreatePool(dashEffect, 2);
@@ -199,8 +199,23 @@ namespace SupanthaPaul
 		{
             if (!IsOwner) return;
 
-            // horizontal input
-            moveInput = InputSystem.HorizontalRaw();
+			if(CameraFollow == null)
+            {
+				CameraFollow = FindObjectOfType<CameraFollow>();
+            }
+
+			if (CameraFollow != null)
+			{
+				CameraFollow.SetTarget(this.transform);
+			}
+			else
+			{
+				Debug.Log("Camera Follow is null");
+			}
+
+
+			// horizontal input
+			moveInput = InputSystem.HorizontalRaw();
 
 			if (isGrounded)
 			{
