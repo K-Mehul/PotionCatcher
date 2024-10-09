@@ -62,12 +62,26 @@ namespace SupanthaPaul
 		private int m_onWallSide = 0;
 		private int m_playerSide = 1;
 
+		CameraFollow CameraFollow;
 
-		void Start()
+        void Start()
 		{
+			if(!IsOwner) return;
+
+			CameraFollow = FindObjectOfType<CameraFollow>();
+
+			if(CameraFollow != null)
+            {
+				CameraFollow.SetTarget(this.transform);
+            }
+            else
+            {
+				Debug.Log("Camera Follow is null");
+            }
+
 			// create pools for particles
-			PoolManager.instance.CreatePool(dashEffect, 2);
-			PoolManager.instance.CreatePool(jumpEffect, 2);
+			//PoolManager.instance.CreatePool(dashEffect, 2);
+			//PoolManager.instance.CreatePool(jumpEffect, 2);
 
 			// if it's the player, make this instance currently playable
 			if (transform.CompareTag("Player"))
@@ -81,6 +95,7 @@ namespace SupanthaPaul
 			m_rb = GetComponent<Rigidbody2D>();
 			m_dustParticle = GetComponentInChildren<ParticleSystem>();
 		}
+
 
 		private void FixedUpdate()
 		{

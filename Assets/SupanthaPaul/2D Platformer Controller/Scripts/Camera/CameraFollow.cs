@@ -1,11 +1,14 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace SupanthaPaul
 {
 	public class CameraFollow : MonoBehaviour
 	{
+
+		public static CameraFollow Instance; 
+
 	    [SerializeField]
 		private Transform target;
 		[SerializeField]
@@ -15,10 +18,56 @@ namespace SupanthaPaul
 		public Vector3 minCamerabounds;
 		public Vector3 maxCamerabounds;
 
+		//bool configured = false;
 
-		private void FixedUpdate()
+		//private List<PlayerController> playerControllers;
+
+        private void Awake()
+        {
+			if (Instance == null) Instance = this;
+        }
+
+
+  //      private void Update()
+  //      {
+		//	if (configured) return;
+
+		//	if(playerControllers.Count < 1)
+  //          {
+		//		StorePlayers();
+		//		return;
+  //          }
+
+		//	UpdateCameraTarget();
+  //      }
+
+  //      private void UpdateCameraTarget()
+  //      {
+		//	foreach(PlayerController playerController in playerControllers)
+  //          {
+		//		if(playerController.OwnerClientId == NetworkManager.Singleton.LocalClientId)
+  //              {
+		//			configured = true;
+		//			SetTarget(playerController.transform);
+  //              }
+  //          }
+		//}
+
+  //      private void StorePlayers()
+  //      {
+		//	PlayerController[] playerControllerArray = FindObjectsByType<PlayerController>(FindObjectsSortMode.None);
+
+		//	if (playerControllerArray.Length <= 0)
+		//		return;
+
+		//	playerControllers = new List<PlayerController>(playerControllerArray);
+		//}
+
+        private void FixedUpdate()
 		{
 			if (target == null) return;
+
+			//if (!configured) return;
 
 			Vector3 desiredPosition = target.localPosition + offset;
 			var localPosition = transform.localPosition;

@@ -16,21 +16,26 @@ namespace SupanthaPaul
 
 		private void Start()
 		{
+			if (!IsOwner) return;
+
 			m_anim = GetComponentInChildren<Animator>();
 			m_controller = GetComponent<PlayerController>();
 			m_rb = GetComponent<Rigidbody2D>();
 		}
 
+		private Vector2 currentSpeed;
+
 		private void Update()
 		{
+			if (!IsOwner) return;
 
-			UpdateAnimationRPC();
-			//// Idle & Running animation
-			//m_anim.SetFloat(Move, Mathf.Abs(m_rb.velocity.x));
+			Vector2 newSpeed = m_rb.velocity;
 
-			//// Jump state (handles transitions to falling/jumping)
-			//float verticalVelocity = m_rb.velocity.y;
-			//m_anim.SetFloat(JumpState, verticalVelocity);
+            if (HasMoveStateChanged(currentSpeed, newSpeed))
+            {
+				currentSpeed = newSpeed;
+				UpdateAnimationRPC(currentSpeed);
+            }
 
 			// Jump animation
 			if (!m_controller.isGrounded && !m_controller.actuallyWallGrabbing)
@@ -55,14 +60,23 @@ namespace SupanthaPaul
         }
 
 		[Rpc(SendTo.Everyone)]
-		private void UpdateAnimationRPC()
+		private void UpdateAnimationRPC(Vector2 speed)
         {
+			if (m_anim == null) return; 
+
             // Idle & Running animation
-            m_anim.SetFloat(Move, Mathf.Abs(m_rb.velocity.x));
+            m_anim.SetFloat(Move, Mathf.Abs(speed.x));
 
             // Jump state (handles transitions to falling/jumping)
-            float verticalVelocity = m_rb.velocity.y;
+            float verticalVelocity = speed.y;
             m_anim.SetFloat(JumpState, verticalVelocity);
         }
+
+
+		private bool HasMoveStateChanged(Vector2 oldSpeed, Vector2 newSpeed)
+		{
+			return Mathf.Abs(oldSpeed.x - newSpeed.x) > 0.1f || Mathf.Abs(oldSpeed.y - newSpeed.y) > 0.1f;
+		}
+
 	}
 }
