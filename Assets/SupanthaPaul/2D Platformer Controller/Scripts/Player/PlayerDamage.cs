@@ -40,8 +40,10 @@ public class PlayerDamage : NetworkBehaviour
                         // Detected that the player has jumped over another player
                         Debug.Log("Jumped over another player: " + playerDamage.OwnerClientId);
                         // Handle logic for jumping over the player.
-                        
-                        NetworkManager.Singleton.ConnectedClients[playerDamage.OwnerClientId].PlayerObject.GetComponent<PlayerDamage>().DieRPC(playerDamage.OwnerClientId);
+
+                        var player = NetworkManager.Singleton.ConnectedClients[playerDamage.OwnerClientId].PlayerObject;
+                        Debug.Log("PLAYER : " + player);
+                        player.GetComponent<PlayerDamage>().DieRPC(playerDamage.OwnerClientId);
                     }
                 }
             }
@@ -59,7 +61,7 @@ public class PlayerDamage : NetworkBehaviour
     }
 
     
-    [Rpc(SendTo.Everyone,RequireOwnership = false)]
+    [Rpc(SendTo.Everyone)]
     public void DieRPC(ulong clientId)
     {  
         if(clientId == NetworkManager.Singleton.LocalClientId)
@@ -73,13 +75,13 @@ public class PlayerDamage : NetworkBehaviour
     
     private void NotifyDeathRPC(ulong clientId)
     {
-        Debug.Log($"Player {clientId} has died.");
+    
     }
 
     [Rpc(SendTo.Everyone)]
     private void NotifyReSpawnRPC(ulong clientId)
     {
-        Debug.Log($"Player {clientId} has respawned.");
+
     }
 
     
