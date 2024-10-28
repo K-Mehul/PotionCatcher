@@ -43,5 +43,6 @@ public class PlayerPlacer : NetworkBehaviour,IGameStateListener
             return;
 
         NetworkManager.Singleton.LocalClient.PlayerObject.transform.position = spawnPosition;
+        NetworkManager.Singleton.LocalClient.PlayerObject.GetComponent<PlayerDamage>().SetReSpawnPosition(spawnPosition);
     }
 }
