@@ -1,12 +1,11 @@
-using SupanthaPaul;
-using System;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using Unity.Netcode;
 using UnityEngine;
 
 
-public enum GameState { WAITING,GAME,WIN, LOSE}
+public enum GameState { WAITING,GAME,GAMECOMPLETE}
 
 [RequireComponent(typeof(NetworkObject))]
 public class GameManager : NetworkBehaviour
@@ -58,13 +57,16 @@ public class GameManager : NetworkBehaviour
         {
             NetworkObject player = Instantiate(playerPrefab);
             player.SpawnAsPlayerObject(kvp.Key);
-
-            //if(player.OwnerClientId == NetworkManager.Singleton.LocalClientId)
-            //    CameraFollow.Instance.SetTarget(player.transform);
         }
-
-
         StartGameRPC();
+    }
+
+
+    [Rpc(SendTo.ClientsAndHost)]
+    public void GameCompletedRPC()
+    {
+        gameState = GameState.GAMECOMPLETE;
+        SetGameState(gameState);
     }
 
 }

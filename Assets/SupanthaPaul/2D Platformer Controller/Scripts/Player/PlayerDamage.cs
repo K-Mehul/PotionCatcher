@@ -41,9 +41,11 @@ public class PlayerDamage : NetworkBehaviour
                         Debug.Log("Jumped over another player: " + playerDamage.OwnerClientId);
                         // Handle logic for jumping over the player.
 
-                        var player = NetworkManager.Singleton.ConnectedClients[playerDamage.OwnerClientId].PlayerObject;
-                        Debug.Log("PLAYER : " + player);
-                        player.GetComponent<PlayerDamage>().DieRPC(playerDamage.OwnerClientId);
+                        //var player = NetworkManager.Singleton.ConnectedClients[playerDamage.OwnerClientId].PlayerObject;
+                        //Debug.Log("PLAYER : " + player);
+                        //player.GetComponent<PlayerDamage>().DieRPC(playerDamage.OwnerClientId);
+
+                        DieServerRpc(playerDamage.OwnerClientId);
                     }
                 }
             }
@@ -59,9 +61,15 @@ public class PlayerDamage : NetworkBehaviour
         // Check if the jump point is above the other collider's top edge
         return jumpPoint.y > otherBounds.max.y; 
     }
+    [Rpc(SendTo.Server)]
+    public void DieServerRpc(ulong userID)
+    {
+        var player = NetworkManager.Singleton.ConnectedClients[userID].PlayerObject;
 
+        player.GetComponent<PlayerDamage>().DieRPC(userID);
+    }
     
-    [Rpc(SendTo.Everyone)]
+    [Rpc(SendTo.ClientsAndHost)]
     public void DieRPC(ulong clientId)
     {  
         if(clientId == NetworkManager.Singleton.LocalClientId)
