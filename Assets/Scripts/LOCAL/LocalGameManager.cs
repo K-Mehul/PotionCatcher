@@ -3,7 +3,6 @@ using UnityEngine;
 using System.Linq;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
-using System;
 
 public enum LocalGameState { MENU, JOINING, SCANNING, WAITING}
 
@@ -39,7 +38,6 @@ public class LocalGameManager : MonoBehaviour
         if (!isServer)
             return;
 
-
         int playerCount = NetworkManager.Singleton.ConnectedClients.Count;
 
         if (playerCount >= 2)
@@ -48,11 +46,15 @@ public class LocalGameManager : MonoBehaviour
 
     private void StartGame()
     {
-        NetworkManager.Singleton.SceneManager.LoadScene("MULTIPLAYER", UnityEngine.SceneManagement.LoadSceneMode.Single);
+        SoundManager.Instance.PlaySound2D("Click");
+        LevelManager.Instance.LoadScene("MULTIPLAYER");
+        MusicManager.Instance.PlayMusic("Game");
+
     }
 
     private void IPButtonClickedCallBack(string ip)
     {
+        SoundManager.Instance.PlaySound2D("Click");
         UnityTransport utp = NetworkManager.Singleton.GetComponent<UnityTransport>();
         utp.SetConnectionData(ip, 7777);
     }
@@ -73,7 +75,7 @@ public class LocalGameManager : MonoBehaviour
     public void CreateButtonCallBack()
     {
         SetGameState(LocalGameState.WAITING);
-
+        SoundManager.Instance.PlaySound2D("Click");
         isServer = true;
         UnityTransport utp = NetworkManager.Singleton.GetComponent<UnityTransport>();
         utp.SetConnectionData(NetworkUtilities.GetLocalIPV4(), 7777);
@@ -84,21 +86,25 @@ public class LocalGameManager : MonoBehaviour
     public void BackFromWaitingCallback()
     {
         SetGameState(LocalGameState.MENU);
+        SoundManager.Instance.PlaySound2D("Click");
         NetworkManager.Singleton.Shutdown();
     }
 
     public void JoinButtonCallBack()
     {
+        SoundManager.Instance.PlaySound2D("Click");
         SetGameState(LocalGameState.SCANNING);
     }
 
     public void BackFromScanPanel()
     {
+        SoundManager.Instance.PlaySound2D("Click");
         SetGameState(LocalGameState.MENU);
     }
     
     public void JoinAfterIPSelectedButtonCalback()
     {
+        SoundManager.Instance.PlaySound2D("Click");
         SetGameState(LocalGameState.JOINING);
         NetworkManager.Singleton.StartClient();
     }

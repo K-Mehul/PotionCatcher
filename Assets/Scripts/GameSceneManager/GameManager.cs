@@ -24,6 +24,7 @@ public class GameManager : NetworkBehaviour
         else DontDestroyOnLoad(gameObject);
     }
 
+
     [Rpc(SendTo.Everyone)]
     private void StartGameRPC()
     {

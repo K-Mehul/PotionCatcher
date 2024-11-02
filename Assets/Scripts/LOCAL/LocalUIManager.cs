@@ -35,7 +35,7 @@ public class LocalUIManager : MonoBehaviour,ILocalGameStateListener
 
     private void Start()
     {
-        ipTxt.text = $"LOCAL IP : {NetworkUtilities.GetLocalIPV4()}";
+        ipTxt.text = $"{NetworkUtilities.GetLocalIPV4()}";
     }
 
 

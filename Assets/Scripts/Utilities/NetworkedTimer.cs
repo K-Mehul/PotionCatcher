@@ -19,8 +19,7 @@ public class NetworkedTimer : NetworkBehaviour
             
             if(timeElapsed >= timeDuration)
             {
-                //GameOver Show the leaderBoard.
-                timeElapsed = 0f;
+                timeElapsed = 60f;
                 GameManager.Instance.GameCompletedRPC();
             }
         }
