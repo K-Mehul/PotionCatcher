@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
@@ -13,22 +14,24 @@ public class NetworkedTimer : NetworkBehaviour
     {
         if (IsServer && GameManager.Instance.IsGameState())
         {
-            timeElapsed += Time.deltaTime;
+            timeDuration -= Time.deltaTime;
 
-            UpdateTimerClientRPC(timeElapsed);
+            UpdateTimerClientRPC(timeDuration);
             
-            if(timeElapsed >= timeDuration)
+            if(timeDuration <= 0)
             {
-                timeElapsed = 60f;
+                timeDuration = 0f;
+                UpdateTimerClientRPC(timeDuration);
                 GameManager.Instance.GameCompletedRPC();
             }
         }
     }
 
+
     [Rpc(SendTo.ClientsAndHost)]
     private void UpdateTimerClientRPC(float newTimeElapsed)
     {
-        timeElapsed = newTimeElapsed;
+        timeDuration = newTimeElapsed;
         UpdateUI();
     }
 
@@ -41,7 +44,10 @@ public class NetworkedTimer : NetworkBehaviour
     {
         if(timerTxt != null)
         {
-            timerTxt.text = $"Time Elapsed : {timeElapsed:F2} seconds remaining";
+            int minutes = Mathf.FloorToInt(timeDuration / 60);
+            int seconds = Mathf.FloorToInt(timeDuration % 60);
+
+            timerTxt.text = $"{minutes:00}:{seconds:00}";
         }
     }
 }

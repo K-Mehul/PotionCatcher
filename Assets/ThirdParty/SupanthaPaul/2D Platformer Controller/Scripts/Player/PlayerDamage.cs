@@ -7,13 +7,24 @@ public class PlayerDamage : NetworkBehaviour
     [SerializeField] LayerMask damageLayerMask;
     [SerializeField] BoxCollider2D capsuleCollider;
     [SerializeField] GameObject Visual;
-    private HashSet<ulong> processedKilllayerId;
+    private HashSet<ulong> processedKillPlayerId;
 
-    [SerializeField] NetworkVariable<ulong> kilCount = new NetworkVariable<ulong>(0,NetworkVariableReadPermission.Everyone,NetworkVariableWritePermission.Owner);
+    public NetworkVariable<ulong> kilCount = new NetworkVariable<ulong>(0,NetworkVariableReadPermission.Everyone,NetworkVariableWritePermission.Owner);
 
     private void Start()
     {
-        processedKilllayerId = new HashSet<ulong>();
+        processedKillPlayerId = new HashSet<ulong>();
+        NetworkManager.Singleton.OnClientDisconnectCallback += Singleton_OnClientDisconnectCallback;
+    }
+
+    public override void OnDestroy()
+    {
+        NetworkManager.Singleton.OnClientDisconnectCallback -= Singleton_OnClientDisconnectCallback;
+    }
+
+    private void Singleton_OnClientDisconnectCallback(ulong clientId)
+    {
+        UnityEngine.SceneManagement.SceneManager.LoadScene("MainMenuScene");
     }
 
     void Update()
@@ -44,10 +55,9 @@ public class PlayerDamage : NetworkBehaviour
                 {
                     PlayerDamage playerDamage = collider.transform.GetComponent<PlayerDamage>();
 
-                    if(playerDamage != null && playerDamage != this.GetComponent<PlayerDamage>() && playerDamage.OwnerClientId != NetworkManager.Singleton.LocalClientId && !processedKilllayerId.Contains(playerDamage.OwnerClientId))
+                    if(playerDamage != null && playerDamage != this.GetComponent<PlayerDamage>() && playerDamage.OwnerClientId != NetworkManager.Singleton.LocalClientId && !processedKillPlayerId.Contains(playerDamage.OwnerClientId))
                     {
-                        //kilCount.Value += 1;
-                        processedKilllayerId.Add(playerDamage.OwnerClientId);
+                        processedKillPlayerId.Add(playerDamage.OwnerClientId);
                         DieServerRpc(playerDamage.OwnerClientId);
                         IncrementkillCount(playerDamage.OwnerClientId);
                     }
@@ -58,14 +68,14 @@ public class PlayerDamage : NetworkBehaviour
 
     public void ClearProcessedKills()
     {
-        processedKilllayerId.Clear();
+        processedKillPlayerId.Clear();
     }
 
     private void IncrementkillCount(ulong id)
     {
         kilCount.Value += 1;
         
-        Invoke(nameof(ClearProcessedKills), 5f);
+        Invoke(nameof(ClearProcessedKills), 2f);
     }
 
     // Helper function to check if the player is above another collider
@@ -80,7 +90,7 @@ public class PlayerDamage : NetworkBehaviour
     [Rpc(SendTo.Server)]
     public void DieServerRpc(ulong userID)
     {
-        var player = NetworkManager.Singleton.ConnectedClients[userID].PlayerObject;
+        NetworkObject player = NetworkManager.Singleton.ConnectedClients[userID].PlayerObject;
 
         player.GetComponent<PlayerDamage>().DieRPC(userID);
     }

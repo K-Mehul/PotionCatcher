@@ -46,10 +46,8 @@ public class LocalGameManager : MonoBehaviour
 
     private void StartGame()
     {
-        SoundManager.Instance.PlaySound2D("Click");
+        //SoundManager.Instance.PlaySound2D("Click");
         LevelManager.Instance.LoadScene("MULTIPLAYER");
-        MusicManager.Instance.PlayMusic("Game");
-
     }
 
     private void IPButtonClickedCallBack(string ip)
@@ -79,6 +77,7 @@ public class LocalGameManager : MonoBehaviour
         isServer = true;
         UnityTransport utp = NetworkManager.Singleton.GetComponent<UnityTransport>();
         utp.SetConnectionData(NetworkUtilities.GetLocalIPV4(), 7777);
+
         NetworkManager.Singleton.StartHost();
     }
 
@@ -105,6 +104,7 @@ public class LocalGameManager : MonoBehaviour
     public void JoinAfterIPSelectedButtonCalback()
     {
         SoundManager.Instance.PlaySound2D("Click");
+
         SetGameState(LocalGameState.JOINING);
         NetworkManager.Singleton.StartClient();
     }

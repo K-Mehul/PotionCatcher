@@ -1,11 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
-using TMPro;
 using Unity.Netcode;
 using UnityEngine;
 
 
-public enum GameState { WAITING,GAME,GAMECOMPLETE}
+public enum GameState { WAITING,GAME,COUNTDOWN,GAMECOMPLETE}
 
 [RequireComponent(typeof(NetworkObject))]
 public class GameManager : NetworkBehaviour
@@ -15,6 +14,8 @@ public class GameManager : NetworkBehaviour
     public static GameManager Instance;
 
     private GameState gameState;
+
+    public List<ulong> playerIds;
 
     private void Awake()
     {
@@ -28,7 +29,7 @@ public class GameManager : NetworkBehaviour
     [Rpc(SendTo.Everyone)]
     private void StartGameRPC()
     {
-        SetGameState(GameState.GAME);
+        SetGameState(GameState.COUNTDOWN);
     }
 
     public void SetGameState(GameState gAME)
@@ -58,9 +59,14 @@ public class GameManager : NetworkBehaviour
         {
             NetworkObject player = Instantiate(playerPrefab);
             player.SpawnAsPlayerObject(kvp.Key);
+
+            playerIds.Add(player.OwnerClientId);
         }
-        StartGameRPC();
+
+        Invoke(nameof(StartGameRPC),1f);
     }
+
+
 
 
     [Rpc(SendTo.ClientsAndHost)]
@@ -69,5 +75,4 @@ public class GameManager : NetworkBehaviour
         gameState = GameState.GAMECOMPLETE;
         SetGameState(gameState);
     }
-
 }

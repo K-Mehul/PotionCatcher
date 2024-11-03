@@ -28,7 +28,10 @@ public class LocalUIManager : MonoBehaviour,ILocalGameStateListener
 
     private void IPButtonClickedCallBack(string ip)
     {
-        joiningBtn.SetActive(true);
+        if(joiningBtn != null)
+        {
+            joiningBtn.SetActive(true);
+        }
         selectedIPTxt.text = ip;
     }
 

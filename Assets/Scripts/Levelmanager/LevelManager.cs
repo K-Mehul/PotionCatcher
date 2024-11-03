@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Linq;
@@ -49,8 +48,10 @@ public class LevelManager : NetworkBehaviour
 
                     AsyncOperation scene = sceneEvent.AsyncOperation;
                     scene.allowSceneActivation = false;
-                    
-                    await transition.AnimateTransitionIn();
+
+                    var(task, duration) = transition.AnimateTransitionIn();
+
+                    await task;
                     
                     progressBar.gameObject.SetActive(true);
 
@@ -61,11 +62,14 @@ public class LevelManager : NetworkBehaviour
 
                     await Task.Delay(1000);
                     
+
+
+                    var (task2, duration2) = transition.AnimateTransitionOut();
+
+
                     scene.allowSceneActivation = true;
-
                     progressBar.gameObject.SetActive(false);
-
-                    await transition.AnimateTransitionOut();
+                    await task2;
                 }
                 break;
 
@@ -75,5 +79,6 @@ public class LevelManager : NetworkBehaviour
                 }
                 break;
         }
+
     }
 }

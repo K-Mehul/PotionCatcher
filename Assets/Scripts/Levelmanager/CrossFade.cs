@@ -8,22 +8,25 @@ public class CrossFade : SceneTransition
 {
     public CanvasGroup crossFade;
 
-    public override Task AnimateTransitionIn()
+    public override (Task animationTask, float duration) AnimateTransitionIn()
     {
         var tweener = crossFade.DOFade(1f, 1f);
+        float duration = tweener.Duration();
+        
         var tcs = new TaskCompletionSource<bool>();
         tweener.OnComplete(() => tcs.SetResult(true));
 
-        return tcs.Task;
+        return (tcs.Task,duration);
     }
 
-    public override Task AnimateTransitionOut()
+    public override (Task animationTask,float duration) AnimateTransitionOut()
     {
         var tweener = crossFade.DOFade(0f, 1f);
+        float duration = tweener.Duration();
 
         var tcs = new TaskCompletionSource<bool>();
         tweener.OnComplete(() => tcs.SetResult(true));
 
-        return tcs.Task;
+        return (tcs.Task,duration);
     }
 }

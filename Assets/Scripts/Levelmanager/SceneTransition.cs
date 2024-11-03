@@ -4,6 +4,6 @@ using UnityEngine;
 
 public abstract class SceneTransition : MonoBehaviour
 {
-    public abstract Task AnimateTransitionIn();
-    public abstract Task AnimateTransitionOut();
+    public abstract (Task animationTask,float duration) AnimateTransitionIn();
+    public abstract (Task animationTask, float duration) AnimateTransitionOut();
 }
